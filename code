@@ -1,0 +1,173 @@
+public class Flight {
+    private String flightNumber;
+    private String origin;
+    private String destination;
+    private int availableSeats;
+
+    public Flight(String flightNumber, String origin, String destination, int availableSeats) {
+        this.flightNumber = flightNumber;
+        this.origin = origin;
+        this.destination = destination;
+        this.availableSeats = availableSeats;
+    }
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void bookSeat() {
+        if (availableSeats > 0) {
+            availableSeats--;
+            System.out.println("Seat booked successfully on Flight " + flightNumber);
+        } else {
+            System.out.println("Sorry, no available seats on Flight " + flightNumber);
+        }
+    }
+
+    public void cancelSeat() {
+        availableSeats++;
+        System.out.println("Seat canceled successfully on Flight " + flightNumber);
+    }
+
+    @Override
+    public String toString() {
+        return "Flight Number: " + flightNumber + ", Origin: " + origin + ", Destination: " + destination + ", Available Seats: " + availableSeats;
+    }
+}
+
+
+public class Customer {
+    private String name;
+    private String email;
+    
+    public Customer(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+}
+
+
+
+import java.util.*;
+
+public class AirlineSystem {
+    private static List<Flight> flights = new ArrayList<>();
+    private static Map<String, Flight> bookings = new HashMap<>();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Initialize some flights
+        flights.add(new Flight("AI101", "New York", "London", 5));
+        flights.add(new Flight("AI102", "Los Angeles", "Paris", 3));
+        flights.add(new Flight("AI103", "San Francisco", "Tokyo", 2));
+
+        // Main Menu
+        while (true) {
+            System.out.println("\n--- Airline Reservation System ---");
+            System.out.println("1. View Available Flights");
+            System.out.println("2. Book a Flight");
+            System.out.println("3. Cancel a Flight");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
+
+            switch (choice) {
+                case 1:
+                    viewAvailableFlights();
+                    break;
+                case 2:
+                    bookFlight(scanner);
+                    break;
+                case 3:
+                    cancelBooking(scanner);
+                    break;
+                case 4:
+                    System.out.println("Thank you for using the Airline Reservation System.");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice! Please try again.");
+            }
+        }
+    }
+
+    // View all available flights
+    private static void viewAvailableFlights() {
+        if (flights.isEmpty()) {
+            System.out.println("No flights available at the moment.");
+        } else {
+            System.out.println("\nAvailable Flights:");
+            for (Flight flight : flights) {
+                System.out.println(flight);
+            }
+        }
+    }
+
+    // Book a flight
+    private static void bookFlight(Scanner scanner) {
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter your email: ");
+        String email = scanner.nextLine();
+        
+        Customer customer = new Customer(name, email);
+        
+        System.out.print("Enter Flight Number to book: ");
+        String flightNumber = scanner.nextLine();
+        
+        Flight flight = findFlightByNumber(flightNumber);
+        if (flight != null) {
+            flight.bookSeat();
+            bookings.put(email, flight);
+            System.out.println("Booking successful for " + customer.getName() + " on " + flightNumber);
+        } else {
+            System.out.println("Flight not found.");
+        }
+    }
+
+    // Cancel a flight booking
+    private static void cancelBooking(Scanner scanner) {
+        System.out.print("Enter your email to cancel the booking: ");
+        String email = scanner.nextLine();
+        
+        if (bookings.containsKey(email)) {
+            Flight flight = bookings.get(email);
+            flight.cancelSeat();
+            bookings.remove(email);
+            System.out.println("Booking canceled for " + email);
+        } else {
+            System.out.println("No booking found for the given email.");
+        }
+    }
+
+    // Find a flight by its number
+    private static Flight findFlightByNumber(String flightNumber) {
+        for (Flight flight : flights) {
+            if (flight.getFlightNumber().equals(flightNumber)) {
+                return flight;
+            }
+        }
+        return null;
+    }
+}
